@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         working-directory: dst
         run: |
-          $foldersToRemove = @("cgal/${{ matrix.os }}", "boost")
+          $foldersToRemove = @("cgal/${{ matrix.os }}")
           foreach ($folder in $foldersToRemove) {
               $fullPath = Join-Path $PWD.Path $folder
               if (Test-Path $fullPath) {
@@ -46,30 +46,6 @@ jobs:
         working-directory: src
         run: |
           git submodule update --init --recursive
-
-      - name: Setup Boost (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: src/boost
-        run: |
-          .\bootstrap.bat
-
-      - name: Setup Boost (Linux/Macos)
-        if: matrix.os != 'windows-latest'
-        working-directory: src/boost
-        run: |
-          ./bootstrap.sh
-
-      - name: Build Boost
-        shell: bash
-        working-directory: src/boost
-        run: |
-          ./b2 headers
-
-      - name: Copy Boost
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          Copy-Item -Path src/boost/boost -Destination dst/boost -Recurse
 
       - name: Build CGAL
         working-directory: src/cgal
