@@ -64,7 +64,7 @@ jobs:
         shell: bash
         working-directory: src/boost
         run: |
-          ./b2 variant=release install --prefix=install --without-python --without-mpi --without-graph
+          ./b2 headers install --prefix=install
 
       - name: Build CGAL
         working-directory: src/cgal
