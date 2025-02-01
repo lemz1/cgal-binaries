@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         working-directory: dst
         run: |
-          $foldersToRemove = @("cgal/${{ matrix.os }}, "boost")
+          $foldersToRemove = @("cgal/${{ matrix.os }}", "boost")
           foreach ($folder in $foldersToRemove) {
               $fullPath = Join-Path $PWD.Path $folder
               if (Test-Path $fullPath) {
