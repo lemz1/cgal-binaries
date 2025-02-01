@@ -47,6 +47,13 @@ jobs:
         run: |
           git submodule update --init
 
+      - name: Build Boost
+        working-directory: src/boost
+        run: |
+          cmake -B out -DCMAKE_BUILD_TYPE=Release
+          cmake --build out --config Release
+          cmake --install out --prefix install
+
       - name: Build CGAL
         working-directory: src/cgal
         run: |
@@ -54,9 +61,10 @@ jobs:
           cmake --build out --config Release
           cmake --install out --prefix install
 
-      - name: Copy CGAL Install
+      - name: Copy Installs
         shell: pwsh
         run: |
+          Copy-Item -Path src/boost/install -Destination dst/boost/${{ matrix.os }} -Recurse
           Copy-Item -Path src/cgal/install -Destination dst/cgal/${{ matrix.os }} -Recurse
 
       - name: Push Main
