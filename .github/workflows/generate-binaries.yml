@@ -64,7 +64,7 @@ jobs:
         shell: bash
         working-directory: src/boost
         run: |
-          ./b2 headers
+          ./b2 install
 
       - name: Build CGAL
         working-directory: src/cgal
