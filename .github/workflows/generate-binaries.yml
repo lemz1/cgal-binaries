@@ -64,8 +64,8 @@ jobs:
         shell: bash
         working-directory: src/boost
         run: |
-          mkdir -p install
-          ./b2 variant=release install --prefix=install
+          mkdir -p bin
+          ./b2 variant=release install --prefix=bin
 
       - name: Build CGAL
         working-directory: src/cgal
@@ -77,7 +77,7 @@ jobs:
       - name: Copy Installs
         shell: pwsh
         run: |
-          Copy-Item -Path src/boost/install -Destination dst/boost/${{ matrix.os }} -Recurse
+          Copy-Item -Path src/boost/bin -Destination dst/boost/${{ matrix.os }} -Recurse
           Copy-Item -Path src/cgal/install -Destination dst/cgal/${{ matrix.os }} -Recurse
 
       - name: Push Main
