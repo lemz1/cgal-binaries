@@ -65,6 +65,12 @@ jobs:
         run: |
           ./b2 headers
 
+      - name: Copy Boost
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Copy-Item -Path src/boost/boost -Destination dst/boost -Recurse
+
       - name: Build CGAL
         working-directory: src/cgal
         run: |
@@ -72,10 +78,9 @@ jobs:
           cmake --build out --config Release
           cmake --install out --prefix install
 
-      - name: Copy Installs
+      - name: Copy CGAL Install
         shell: pwsh
         run: |
-          Copy-Item -Path src/boost/boost -Destination dst/boost -Recurse
           Copy-Item -Path src/cgal/install -Destination dst/cgal/${{ matrix.os }} -Recurse
 
       - name: Push Main
