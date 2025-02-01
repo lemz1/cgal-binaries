@@ -63,7 +63,7 @@ jobs:
         shell: bash
         working-directory: src/boost
         run: |
-          ./b2 install
+          ./b2 headers
 
       - name: Build CGAL
         working-directory: src/cgal
