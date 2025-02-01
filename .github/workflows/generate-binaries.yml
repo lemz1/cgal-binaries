@@ -1,0 +1,78 @@
+name: Build and Push Binaries
+
+on:
+  push:
+    branches:
+      - binaries-source
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Setup MSVC
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Checkout Binaries-Source
+        uses: actions/checkout@v3
+        with:
+          path: src
+          ref: binaries-source
+          token: ${{ secrets.PAT }}
+
+      - name: Checkout Main
+        uses: actions/checkout@v3
+        with:
+          path: dst
+          ref: main
+          token: ${{ secrets.PAT }}
+
+      - name: Remove Old Content From Main
+        shell: pwsh
+        working-directory: dst
+        run: |
+          $foldersToRemove = @("cgal/${{ matrix.os }}")
+          foreach ($folder in $foldersToRemove) {
+              $fullPath = Join-Path $PWD.Path $folder
+              if (Test-Path $fullPath) {
+                  Remove-Item -Path $fullPath -Recurse -Force
+              }
+          }
+
+      - name: Init Submodules
+        working-directory: src
+        run: |
+          git submodule update --init
+
+      - name: Build CGAL
+        working-directory: src/cgal
+        run: |
+          cmake -B out -DCMAKE_BUILD_TYPE=Release
+          cmake --build out --config Release
+          cmake --install out --prefix install
+
+      - name: Copy CGAL Install
+        shell: pwsh
+        run: |
+          Copy-Item -Path src/cgal/install -Destination dst/cgal/${{ matrix.os }} -Recurse
+
+      - name: Push Main
+        working-directory: dst
+        shell: bash
+        run: |
+          git config --global user.name lemz1
+          git config --global user.email ${{ secrets.EMAIL }}
+          git add -A
+
+          git fetch --all
+          git pull
+
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit. Skipping push."
+          else
+            git commit -m "Workflow: Push Generated Binaries for ${{ matrix.os }}"
+            git push
+          fi
