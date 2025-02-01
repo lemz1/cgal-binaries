@@ -47,12 +47,21 @@ jobs:
         run: |
           git submodule update --init
 
-      - name: Build Boost
+      - name: Setup Boost (Windows)
         working-directory: src/boost
         run: |
-          cmake -B out -DCMAKE_BUILD_TYPE=Release
-          cmake --build out --config Release
-          cmake --install out --prefix install
+          bootstrap.bat
+
+      - name: Setup Boost (Linux/Macos)
+        working-directory: src/boost
+        run: |
+          ./bootstrap.sh
+
+      - name: Build Boost
+        shell: bash
+        working-directory: src/boost
+        run: |
+          ./b2 variant=release install --prefix=install
 
       - name: Build CGAL
         working-directory: src/cgal
