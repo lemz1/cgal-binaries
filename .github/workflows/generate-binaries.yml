@@ -49,7 +49,7 @@ jobs:
       - name: Copy CGAL Install
         run: |
           mkdir -p dst/cgal
-          cp -r src/cgal/install dst/cgal
+          cp -r src/cgal/install/* dst/cgal
 
       - name: Push Main
         working-directory: dst
